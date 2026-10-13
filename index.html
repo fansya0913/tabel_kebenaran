@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROPOZ | Logic Workbench</title>
+
+<style>
+:root {
+  --bg: #f4f7f2;
+  --white: #ffffff;
+  --green: #245b40;
+  --green2: #397b55;
+  --lime: #d9fa78;
+  --text: #1b2c22;
+  --muted: #728075;
+  --border: #dfe7dd;
+  --red: #c63c50;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+header {
+  background: var(--white);
+  padding: 20px 5%;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 45px;
+  height: 45px;
+  border-radius: 14px;
+  background: var(--lime);
+  display: grid;
+  place-items: center;
+  font-size: 27px;
+  font-weight: bold;
+}
+
+.brand h1 { margin: 0; font-size: 21px; }
+.brand p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+
+.badge {
+  background: #edf6e7;
+  color: var(--green);
+  border-radius: 30px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 35px 22px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.hero small {
+  color: var(--green2);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.hero h2 {
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: -1px;
+  line-height: 1.15;
+  margin: 12px 0;
+}
+
+.hero p {
+  color: var(--muted);
+  max-width: 650px;
+  line-height: 1.7;
+}
+
+.hero-mark {
+  background: var(--lime);
+  padding: 24px;
+  border-radius: 20px;
+  text-align: center;
+  min-width: 125px;
+  transform: rotate(2deg);
+}
+
+.hero-mark strong { font-size: 32px; display: block; }
+.hero-mark span { font-size: 10px; font-weight: bold; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 15px 18px;
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: bold;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--green);
+  border-bottom-color: var(--green2);
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.stack {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  padding: 24px;
+  min-width: 0;
+  box-shadow: 0 6px 22px #1b35200a;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.card h3 { margin: 0; font-size: 17px; }
+
+.label-tag {
+  background: #edf5e8;
+  color: var(--green);
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+label {
+  display: block;
+  margin: 17px 0 8px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  padding: 15px;
+  background: #f9fbf7;
+  color: var(--green);
+  border: 1px solid #cedbce;
+  border-radius: 11px;
+  font: 16px/1.7 Consolas, monospace;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: var(--green2);
+  box-shadow: 0 0 0 3px #397b5518;
+}
+
+.symbols, .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.symbol {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--green);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.symbol:hover { background: var(--lime); }
+
+.actions { margin-top: 15px; }
+
+.btn {
+  padding: 11px 15px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn:hover { border-color: var(--green2); }
+
+.btn.primary {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+
+.btn.primary:hover { background: var(--green2); }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 17px 0;
+}
+
+.stat {
+  background: #f7faf4;
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 11px;
+  min-width: 0;
+}
+
+.stat span { color: var(--muted); font-size: 11px; display: block; }
+.stat strong { color: var(--green); font-size: 24px; display: block; margin-top: 8px; overflow-wrap: anywhere; }
+
+.variables {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.variable {
+  background: #edf7e6;
+  border: 1px solid #d2e6bf;
+  padding: 7px 11px;
+  border-radius: 7px;
+  color: var(--green);
+  font-weight: bold;
+}
+
+.pipeline-item {
+  padding: 13px 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  background: var(--lime);
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.pipeline-item b { font-size: 13px; }
+.pipeline-item small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 12px 14px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+th { background: #edf4e8; color: var(--green); }
+tbody tr:nth-child(even) { background: #f8faf6; }
+tbody tr:hover { background: #eff7e7; }
+
+.true { color: #138357; font-weight: bold; }
+.false { color: var(--red); font-weight: bold; }
+
+.notice {
+  background: #f1f6eb;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 17px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.notice strong { color: var(--green); }
+
+.error {
+  background: #fff0f1;
+  color: #a52f43;
+  padding: 13px;
+  border-radius: 9px;
+  margin-top: 12px;
+  border: 1px solid #f0c2c8;
+}
+
+.result {
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  line-height: 1.7;
+}
+
+.valid { background: #e9f8ef; color: #176d45; }
+.invalid { background: #fff0f1; color: #a52f43; }
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.example {
+  text-align: left;
+  padding: 15px;
+  border: 1px solid var(--border);
+  background: #fafcf8;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.example:hover { border-color: var(--green2); }
+.example small { display: block; color: var(--green2); margin-bottom: 9px; font-weight: bold; }
+.example code { overflow-wrap: anywhere; white-space: normal; color: var(--green); }
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+
+.history-item code { overflow-wrap: anywhere; color: var(--green); }
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+  margin-top: 30px;
+  font-size: 12px;
+}
+
+@media(max-width:850px) {
+  .grid { grid-template-columns: 1fr; }
+  .hero-mark { display: none; }
+}
+
+@media(max-width:550px) {
+  header { padding: 15px; }
+  .brand h1 { font-size: 18px; }
+  .badge { display: none; }
+  main { padding: 23px 12px; }
+  .card { padding: 17px; }
+  .stats { grid-template-columns: 1fr; }
+  .example-grid { grid-template-columns: 1fr; }
+  .hero h2 { font-size: 31px; }
+}
+
+@media print {
+  header, .tabs, .no-print, footer { display: none !important; }
+  body { background: white; }
+  main { padding: 0; }
+  .page { display: none !important; }
+  .page.active { display: block !important; }
+  .card { box-shadow: none; break-inside: avoid; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">∴</div>
+    <div>
+      <h1>PROPOZ <span style="color:#94a49a">/ Logic Lab</span></h1>
+      <p>LOGIKA INFORMATIKA · PJBL-1</p>
+    </div>
+  </div>
+  <span class="badge">● SISTEM SIAP</span>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <small>LOGIC ANALYSIS WORKSPACE</small>
+      <h2>Uji logika.<br>Temukan kebenaran.</h2>
+      <p>Simulator tabel kebenaran dan verifikator argumen untuk analisis logika proposisional secara otomatis.</p>
+    </div>
+    <div class="hero-mark"><strong>2ⁿ</strong><span>KOMBINASI KEBENARAN</span></div>
+  </section>
+
+  <nav class="tabs no-print">
+    <button class="tab active" data-page="truth">01 / Tabel Kebenaran</button>
+    <button class="tab" data-page="argument">02 / Verifikasi Argumen</button>
+    <button class="tab" data-page="history">03 / Riwayat</button>
+    <button class="tab" data-page="guide">04 / Panduan</button>
+  </nav>
+
+  <section id="truth" class="page active">
+    <div class="grid">
+      <div class="stack">
+        <div class="card">
+          <div class="card-head">
+            <h3>Input Ekspresi Logika</h3>
+            <span class="label-tag">INPUT 01</span>
+          </div>
+          <p class="muted">Masukkan ekspresi proposisional. Variabel akan dideteksi otomatis oleh parser.</p>
+          <label>Toolbar Simbol</label>
+          <div class="symbols no-print">
+            <button class="symbol" data-symbol="¬">¬ NOT</button>
+            <button class="symbol" data-symbol="∧">∧ AND</button>
+            <button class="symbol" data-symbol="∨">∨ OR</button>
+            <button class="symbol" data-symbol="→">→ IMP</button>
+            <button class="symbol" data-symbol="↔">↔ BILIMP</button>
+            <button class="symbol" data-symbol="(">(</button>
+            <button class="symbol" data-symbol=")">)</button>
+          </div>
+          <label for="expr">Formula proposisional</label>
+          <textarea id="expr" spellcheck="false">(P → Q) ∧ P</textarea>
+          <div class="actions no-print">
+            <button class="btn primary" id="generate">▶ Generate Tabel</button>
+            <button class="btn" id="clear">Reset</button>
+            <button class="btn" id="csv">↓ Export CSV</button>
+          </div>
+          <div id="error" class="error" hidden></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Analisis Parser</h3>
+            <span class="label-tag">ENGINE</span>
+          </div>
+          <div class="stats">
+            <div class="stat"><span>Variabel</span><strong id="vc">2</strong></div>
+            <div class="stat"><span>Kombinasi</span><strong id="cc">4</strong></div>
+            <div class="stat"><span>Hasil True</span><strong id="tc">3</strong></div>
+          </div>
+          <label>Variabel terdeteksi</label>
+          <div class="variables" id="variables"></div>
+          <label>Pipeline pemrosesan</label>
+          <div id="pipeline"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Tabel Kebenaran</h3>
+          <span class="label-tag">OUTPUT 01</span>
+        </div>
+        <p class="muted" id="formulaLabel"></p>
+        <div class="table-wrap" id="truthOutput"></div>
+        <div class="notice">
+          <strong>Interpretasi hasil</strong><br>
+          T = True (benar), F = False (salah). Jumlah kombinasi adalah 2ⁿ, dengan n sebagai jumlah variabel.<br>
+          Prioritas operator: NOT → AND → OR → implikasi → biimplikasi.
+        </div>
+        <div class="actions no-print">
+          <button class="btn" onclick="window.print()">Cetak / Simpan PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="card-head">
+        <h3>Contoh Ekspresi</h3>
+        <span class="label-tag">QUICK TEST</span>
+      </div>
+      <div class="example-grid">
+        <button class="example" data-exp="(P → Q) ∧ P"><small>CONTOH 01</small><code>(P → Q) ∧ P</code></button>
+        <button class="example" data-exp="P ∨ ¬Q"><small>CONTOH 02</small><code>P ∨ ¬Q</code></button>
+        <button class="example" data-exp="(P ∧ Q) → R"><small>CONTOH 03</small><code>(P ∧ Q) → R</code></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="argument" class="page">
+    <div class="card">
+      <div class="card-head">
+        <h3>Verifikator Validitas Argumen</h3>
+        <span class="label-tag">ARGUMENT ENGINE</span>
+      </div>
+      <p class="muted">Masukkan satu premis pada setiap baris dan satu kesimpulan. Sistem akan mencari counterexample.</p>
+      <label for="premises">Premis (satu per baris)</label>
+      <textarea id="premises">P → Q
+P</textarea>
+      <label for="conclusion">Kesimpulan</label>
+      <textarea id="conclusion" style="min-height:65px">Q</textarea>
+      <div class="actions no-print">
+        <button class="btn primary" id="verify">✓ Verifikasi Argumen</button>
+        <button class="btn" id="loadArg">Muat Contoh Modus Ponens</button>
+      </div>
+      <div id="argResult"></div>
+      <div class="table-wrap" id="argOutput"></div>
+    </div>
+  </section>
+
+  <section id="history" class="page">
+    <div class="card">
+      <div class="card-head">
+        <h3>Riwayat Analisis</h3>
+        <button class="btn" id="clearHistory">Hapus Riwayat</button>
+      </div>
+      <p class="muted">Ekspresi yang berhasil diproses selama sesi ini.</p>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <section id="guide" class="page">
+    <div class="card">
+      <h3>Panduan Operator Logika</h3>
+      <p class="muted">Gunakan simbol atau operator teks. Contoh: P AND (Q OR NOT R).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Simbol</th><th>Operator</th><th>Makna</th></tr></thead>
+          <tbody>
+            <tr><td>¬P</td><td>NOT</td><td>Negasi P</td></tr>
+            <tr><td>P ∧ Q</td><td>AND</td><td>Benar jika keduanya benar</td></tr>
+            <tr><td>P ∨ Q</td><td>OR</td><td>Benar jika minimal satu benar</td></tr>
+            <tr><td>P → Q</td><td>IMP</td><td>Salah hanya ketika P benar dan Q salah</td></tr>
+            <tr><td>P ↔ Q</td><td>BILIMP</td><td>Benar jika nilai keduanya sama</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notice"><strong>Verifikasi argumen</strong><br>Argumen valid jika tidak ada baris yang membuat semua premis benar dan kesimpulan salah.</div>
+    </div>
+  </section>
+
+  <footer>
+    <span>PROPOZ / Logic Workbench · PJBL-1</span>
+    <span>HTML · CSS · JavaScript · Educational Tool</span>
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+let lastTruth = null;
+let historyItems = [];
+
+function normalize(s) {
+  return s.replace(/¬/g," NOT ")
+    .replace(/∧/g," AND ").replace(/∨/g," OR ")
+    .replace(/→/g," IMP ").replace(/↔/g," IFF ")
+    .replace(/⊤/g," TRUE ").replace(/⊥/g," FALSE ");
+}
+
+function tokenize(source) {
+  const s=normalize(source), tokens=[];
+  const re=/\s+|[A-Za-z_][A-Za-z0-9_]*|[()]/gy;
+  let pos=0;
+  while(pos<s.length) {
+    re.lastIndex=pos;
+    const m=re.exec(s);
+    if(!m) throw Error(`Simbol "${s[pos]}" tidak dikenal pada posisi ${pos+1}.`);
+    pos=re.lastIndex;
+    if(!/^\s+$/.test(m[0])) tokens.push(m[0]);
+  }
+  if(!tokens.length) throw Error("Masukkan ekspresi terlebih dahulu.");
+  return tokens;
+}
+
+function parse(source) {
+  const tokens=Array.isArray(source)?source:tokenize(source);
+  let i=0;
+  const vars=new Set();
+  const peek=()=>tokens[i];
+
+  function take(...ops) {
+    if(ops.includes(peek()?.toUpperCase())) return tokens[i++].toUpperCase();
+    return null;
+  }
+
+  function primary() {
+    const t=peek();
+    if(t===undefined) throw Error("Ekspresi belum lengkap.");
+    if(t==="(") {
+      i++;
+      const node=iff();
+      if(peek()!==")") throw Error("Tanda kurung buka belum ditutup.");
+      i++;
+      return node;
+    }
+    if(t===")") throw Error("Tanda kurung tutup tidak sesuai.");
+
+    const u=t.toUpperCase();
+    if(["AND","OR","NOT","IMP","IFF","IMPLIES","BILIMP"].includes(u))
+      throw Error(`Operator ${t} tidak memiliki operand.`);
+
+    i++;
+    if(u==="TRUE"||u==="FALSE")
+      return {type:"const",v:u==="TRUE"};
+
+    vars.add(u);
+    return {type:"var",n:u};
+  }
+
+  function unary() {
+    return take("NOT") ? {type:"not",a:unary()} : primary();
+  }
+  function and() {
+    let n=unary();
+    while(take("AND")) n={type:"and",a:n,b:unary()};
+    return n;
+  }
+  function or() {
+    let n=and();
+    while(take("OR")) n={type:"or",a:n,b:and()};
+    return n;
+  }
+  function imp() {
+    let n=or();
+    if(take("IMP","IMPLIES")) n={type:"imp",a:n,b:imp()};
+    return n;
+  }
+  function iff() {
+    let n=imp();
+    while(take("IFF","BILIMP")) n={type:"iff",a:n,b:imp()};
+    return n;
+  }
+
+  const tree=iff();
+  if(i!==tokens.length) throw Error(`Token "${peek()}" tidak sesuai sintaks.`);
+  const variables=[...vars].sort();
+  if(variables.length>12) throw Error("Maksimal 12 variabel.");
+  return {tree,variables,tokens};
+}
+
+function evaluate(n,v) {
+  switch(n.type) {
+    case "const": return n.v;
+    case "var": return !!v[n.n];
+    case "not": return !evaluate(n.a,v);
+    case "and": return evaluate(n.a,v)&&evaluate(n.b,v);
+    case "or": return evaluate(n.a,v)||evaluate(n.b,v);
+    case "imp": return !evaluate(n.a,v)||evaluate(n.b,v);
+    case "iff": return evaluate(n.a,v)===evaluate(n.b,v);
+    default: throw Error("Struktur ekspresi tidak dikenal.");
+  }
+}
+
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+function assignments(vars) {
+  return Array.from({length:2**vars.length},(_,i)=>{
+    const v={};
+    vars.forEach((x,j)=>{
+      v[x]=(i&(1<<(vars.length-j-1)))===0;
+    });
+    return v;
+  });
+}
+
+function table(headers,rows) {
+  return `<table><thead><tr>${headers.map(x=>`<th>${escapeHTML(x)}</th>`).join("")}</tr></thead><tbody>${
+    rows.map(r=>`<tr>${r.map(x=>typeof x==="boolean"
+      ?`<td class="${x?"true":"false"}">${x?"T":"F"}</td>`
+      :`<td>${x}</td>`).join("")}</tr>`).join("")
+  }</tbody></table>`;
+}
+
+function generate() {
+  $("error").hidden=true;
+  try {
+    const expression=$("expr").value.trim();
+    const parsed=parse(expression);
+    const vars=parsed.variables;
+    const rows=assignments(vars).map(v=>({v,result:evaluate(parsed.tree,v)}));
+
+    $("truthOutput").innerHTML=table(
+      [...vars,"Hasil"],
+      rows.map(r=>[...vars.map(v=>r.v[v]),r.result])
+    );
+    $("vc").textContent=vars.length;
+    $("cc").textContent=rows.length;
+    $("tc").textContent=rows.filter(r=>r.result).length;
+    $("variables").innerHTML=vars.length
+      ?vars.map(v=>`<span class="variable">${escapeHTML(v)}</span>`).join("")
+      :'<span class="variable">Konstanta</span>';
+
+    $("pipeline").innerHTML=[
+      ["Tokenisasi",`${parsed.tokens.length} token berhasil dikenali: ${parsed.tokens.join(" · ")}`],
+      ["Parsing sintaks","Ekspresi berhasil diperiksa menggunakan recursive-descent parser."],
+      ["Deteksi variabel",`${vars.length} variabel proposisional ditemukan.`],
+      ["Evaluasi",`${rows.length} kombinasi nilai kebenaran telah dihitung.`]
+    ].map((x,i)=>`<div class="pipeline-item"><span class="step-number">${i+1}</span><div><b>${x[0]}</b><small>${escapeHTML(x[1])}</small></div></div>`).join("");
+
+    $("formulaLabel").textContent="FORMULA: "+expression;
+    lastTruth={vars,rows,expression};
+    if(!historyItems.includes(expression)) historyItems.unshift(expression);
+    historyItems=historyItems.slice(0,40);
+    renderHistory();
+  } catch(e) {
+    $("error").hidden=false;
+    $("error").textContent="Kesalahan: "+e.message;
+    $("truthOutput").innerHTML="";
+    $("variables").innerHTML="";
+    $("pipeline").innerHTML="";
+    $("vc").textContent="0";
+    $("cc").textContent="0";
+    $("tc").textContent="0";
+    lastTruth=null;
+  }
+}
+
+function verify() {
+  $("argResult").innerHTML="";
+  $("argOutput").innerHTML="";
+  try {
+    const ps=$("premises").value.split(/\n/).map(s=>s.trim()).filter(Boolean);
+    const cs=$("conclusion").value.trim();
+    if(!ps.length||!cs) throw Error("Isi minimal satu premis dan kesimpulan.");
+
+    const pp=ps.map(s=>({text:s,...parse(s)}));
+    const cc=parse(cs);
+    const vars=[...new Set([...pp.flatMap(p=>p.variables),...cc.variables])].sort();
+    if(vars.length>12) throw Error("Maksimal 12 variabel.");
+
+    const rows=assignments(vars).map(v=>{
+      const pv=pp.map(p=>evaluate(p.tree,v));
+      const c=evaluate(cc.tree,v);
+      return {v,pv,c,bad:pv.every(Boolean)&&!c};
+    });
+
+    const bad=rows.filter(r=>r.bad);
+    const valid=bad.length===0;
+    $("argResult").innerHTML=`<div class="result ${valid?"valid":"invalid"}"><b>${valid?"✓ ARGUMEN VALID":"✕ ARGUMEN TIDAK VALID"}</b><br>${valid?"Tidak ada baris ketika seluruh premis benar dan kesimpulan salah.":`Ditemukan ${bad.length} counterexample: seluruh premis benar, tetapi kesimpulan salah.`}</div>`;
+
+    $("argOutput").innerHTML=table(
+      [...vars,...ps.map((_,i)=>"Premis "+(i+1)),"Kesimpulan","Status"],
+      rows.map(r=>[
+        ...vars.map(v=>r.v[v]),...r.pv,r.c,
+        r.bad?"Counterexample":"—"
+      ])
+    );
+  } catch(e) {
+    $("argResult").innerHTML=`<div class="error">${escapeHTML("Kesalahan: "+e.message)}</div>`;
+  }
+}
+
+function renderHistory() {
+  $("historyList").innerHTML=historyItems.length
+    ?historyItems.map((s,i)=>`<div class="history-item"><code>${escapeHTML(s)}</code><button class="btn" data-open="${i}">Buka</button></div>`).join("")
+    :'<p class="muted">Belum ada ekspresi yang diproses.</p>';
+
+  document.querySelectorAll("[data-open]").forEach(b=>{
+    b.onclick=()=>{
+      $("expr").value=historyItems[Number(b.dataset.open)];
+      go("truth");
+      generate();
+    };
+  });
+}
+
+function go(id) {
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+}
+
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>go(b.dataset.page));
+
+document.querySelectorAll("[data-symbol]").forEach(b=>b.onclick=()=>{
+  const t=$(b.dataset.target||"expr");
+  const s=t.selectionStart,e=t.selectionEnd;
+  t.setRangeText(b.dataset.symbol,s,e,"end");
+  t.focus();
+});
+
+document.querySelectorAll("[data-exp]").forEach(b=>b.onclick=()=>{
+  $("expr").value=b.dataset.exp;
+  generate();
+});
+
+$("generate").onclick=generate;
+$("verify").onclick=verify;
+$("loadArg").onclick=()=>{
+  $("premises").value="P → Q\nP";
+  $("conclusion").value="Q";
+  verify();
+};
+
+$("clear").onclick=()=>{
+  $("expr").value="";
+  $("truthOutput").innerHTML="";
+  $("variables").innerHTML="";
+  $("pipeline").innerHTML="";
+  $("formulaLabel").textContent="";
+  $("vc").textContent="0";
+  $("cc").textContent="0";
+  $("tc").textContent="0";
+  $("error").hidden=true;
+  lastTruth=null;
+};
+
+$("clearHistory").onclick=()=>{historyItems=[];renderHistory()};
+
+$("csv").onclick=()=>{
+  if(!lastTruth)return;
+  const {vars,rows}=lastTruth;
+  const data=[[...vars,"Hasil"],...rows.map(r=>[
+    ...vars.map(v=>r.v[v]?"T":"F"),r.result?"T":"F"
+  ])];
+  const csv="\uFEFF"+data.map(r=>r.join(",")).join("\r\n");
+  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  const a=document.createElement("a");
+  a.href=url;a.download="tabel-kebenaran.csv";a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+
+$("expr").addEventListener("keydown",e=>{
+  if(e.ctrlKey&&e.key==="Enter")generate();
+});
+
+generate();
+</script>
+</body>
+</html>
