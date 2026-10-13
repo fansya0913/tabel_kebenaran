@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logic Truth Table Generator</title>
+
+<style>
+:root {
+  --bg: #071329;
+  --panel: #101f3d;
+  --border: #294c80;
+  --blue: #4295ff;
+  --cyan: #6ee7ff;
+  --green: #19c995;
+  --red: #ff6085;
+  --text: #f0f6ff;
+  --muted: #a8b9d5;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  padding: 28px 5%;
+  background: linear-gradient(120deg, #10234a, #10163d);
+  border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 4vw, 36px);
+}
+
+header p, .muted { color: var(--muted); }
+
+header p { margin: 0; }
+
+main {
+  width: min(1250px, 94%);
+  margin: 28px auto;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 30px #00000015;
+}
+
+h2 { font-size: 20px; margin-top: 0; }
+
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 95px;
+  resize: vertical;
+  padding: 16px;
+  background: #08162d;
+  color: white;
+  border: 1px solid #397fc9;
+  border-radius: 10px;
+  font: 16px Consolas, monospace;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px #6ee7ff20;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 11px 15px;
+  font-weight: 600;
+  color: var(--text);
+  background: #1b3156;
+  transition: .2s;
+}
+
+button:hover { filter: brightness(1.2); }
+
+button.primary {
+  background: linear-gradient(110deg, #159e83, #19c995);
+  color: #041b1b;
+  border: none;
+  padding: 14px 22px;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.controls, .examples, .stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.controls { margin-top: 16px; }
+
+.controls .primary { margin-left: auto; }
+
+.example-btn { font-family: Consolas, monospace; }
+
+.error {
+  color: #ff9aaf;
+  background: #461d34;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.hidden { display: none !important; }
+
+.stats { margin: 15px 0; }
+
+.stat {
+  flex: 1 1 140px;
+  padding: 14px;
+  border-radius: 9px;
+  background: #0a1932;
+  border: 1px solid var(--border);
+}
+
+.stat strong {
+  display: block;
+  font-size: 22px;
+  color: var(--cyan);
+  margin-bottom: 4px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 300px;
+  text-align: center;
+}
+
+th, td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #253d60;
+  border-right: 1px solid #253d60;
+}
+
+th {
+  background: #20365b;
+  color: var(--cyan);
+  position: sticky;
+  top: 0;
+}
+
+tbody tr:nth-child(even) { background: #142847; }
+tbody tr:hover { background: #203d62; }
+
+.truth {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.falsehood {
+  color: var(--red);
+  font-weight: 800;
+}
+
+.result-heading {
+  overflow-wrap: anywhere;
+  color: var(--cyan);
+  font-family: Consolas, monospace;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 22px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  header { padding: 24px 5%; }
+  .panel { padding: 15px; }
+  .controls .primary { margin-left: 0; width: 100%; }
+  th, td { padding: 10px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>🧠 Logic Truth Table Generator</h1>
+  <p>Parser ekspresi logika dan pembangkit tabel kebenaran otomatis.</p>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>⌨️ Input Ekspresi Logika</h2>
+
+    <textarea id="expression"
+      spellcheck="false"
+      aria-label="Ekspresi logika"
+      placeholder="Contoh: p AND (q OR NOT r)">p AND (q OR NOT r)</textarea>
+
+    <div class="controls">
+      <button class="primary" id="generateBtn">
+        ▶ Generate Tabel
+      </button>
+      <button id="clearBtn">Bersihkan</button>
+    </div>
+
+    <p class="note">
+      Operator yang didukung: AND, OR, NOT, serta tanda kurung.
+      Gunakan nama variabel seperti p, q, r, atau variabel lainnya.
+      Prioritas operasi: NOT, kemudian AND, lalu OR.
+    </p>
+
+    <div class="examples">
+      <span class="muted">Contoh:</span>
+      <button class="example-btn" data-expression="p AND (q OR NOT r)">
+        Contoh 1
+      </button>
+      <button class="example-btn" data-expression="p OR NOT q">
+        Contoh 2
+      </button>
+      <button class="example-btn" data-expression="(p AND q) OR r">
+        Contoh 3
+      </button>
+    </div>
+
+    <div id="error" class="error hidden" role="alert"></div>
+  </section>
+
+  <section id="output" class="panel">
+    <h2>📊 Hasil Tabel Kebenaran</h2>
+    <p class="muted">Tabel akan ditampilkan setelah ekspresi diproses.</p>
+  </section>
+
+  <section class="panel">
+    <h2>📘 Panduan Penggunaan</h2>
+    <p class="note">
+      <b>AND:</b> bernilai benar jika kedua operand benar.<br>
+      <b>OR:</b> bernilai benar jika minimal satu operand benar.<br>
+      <b>NOT:</b> membalik nilai kebenaran operand.<br>
+      <b>T:</b> True (benar). <b>F:</b> False (salah).<br>
+      <b>2ⁿ:</b> jumlah baris kombinasi, dengan n sebagai jumlah
+      variabel yang berbeda.
+    </p>
+  </section>
+</main>
+
+<footer>
+  Logic Truth Table Generator · PJBL-1 · Media Pembelajaran
+</footer>
+
+<script>
+"use strict";
+
+const input = document.getElementById("expression");
+const output = document.getElementById("output");
+const errorBox = document.getElementById("error");
+
+function tokenize(source) {
+  const tokens = [];
+  const pattern = /\s+|[A-Za-z_][A-Za-z0-9_]*|[()]/gy;
+  let position = 0;
+
+  while (position < source.length) {
+    pattern.lastIndex = position;
+    const match = pattern.exec(source);
+
+    if (!match) {
+      throw new Error(
+        `Simbol tidak valid pada posisi ${position + 1}: "${source[position]}"`
+      );
+    }
+
+    position = pattern.lastIndex;
+
+    if (!/^\s+$/.test(match[0])) {
+      tokens.push(match[0]);
+    }
+  }
+
+  if (!tokens.length) {
+    throw new Error("Masukkan ekspresi logika terlebih dahulu.");
+  }
+
+  return tokens;
+}
+
+function parse(tokens) {
+  let position = 0;
+  const variables = new Set();
+
+  function peek() {
+    return tokens[position];
+  }
+
+  function matchOperator(operator) {
+    if (peek()?.toUpperCase() === operator) {
+      position++;
+      return true;
+    }
+    return false;
+  }
+
+  function parsePrimary() {
+    const token = peek();
+
+    if (token === undefined) {
+      throw new Error("Ekspresi belum lengkap.");
+    }
+
+    if (token === "(") {
+      position++;
+      const node = parseOr();
+
+      if (peek() !== ")") {
+        throw new Error("Tanda kurung buka belum memiliki pasangan.");
+      }
+
+      position++;
+      return node;
+    }
+
+    if (token === ")") {
+      throw new Error("Ada tanda kurung tutup yang tidak sesuai.");
+    }
+
+    const upper = token.toUpperCase();
+
+    if (["AND", "OR", "NOT"].includes(upper)) {
+      throw new Error(`Operator "${token}" tidak memiliki operand.`);
+    }
+
+    position++;
+
+    if (upper === "TRUE" || upper === "FALSE") {
+      return { type: "constant", value: upper === "TRUE" };
+    }
+
+    variables.add(token);
+    return { type: "variable", name: token };
+  }
+
+  function parseNot() {
+    if (matchOperator("NOT")) {
+      return { type: "not", child: parseNot() };
+    }
+    return parsePrimary();
+  }
+
+  function parseAnd() {
+    let node = parseNot();
+
+    while (matchOperator("AND")) {
+      node = {
+        type: "and",
+        left: node,
+        right: parseNot()
+      };
+    }
+
+    return node;
+  }
+
+  function parseOr() {
+    let node = parseAnd();
+
+    while (matchOperator("OR")) {
+      node = {
+        type: "or",
+        left: node,
+        right: parseAnd()
+      };
+    }
+
+    return node;
+  }
+
+  const tree = parseOr();
+
+  if (position !== tokens.length) {
+    throw new Error(`Token tidak sesuai: "${peek()}". Periksa operator dan tanda kurung.`);
+  }
+
+  return {
+    tree,
+    variables: [...variables].sort((a, b) =>
+      a.localeCompare(b, undefined, { numeric: true })
+    )
+  };
+}
+
+function evaluate(node, values) {
+  switch (node.type) {
+    case "constant":
+      return node.value;
+
+    case "variable":
+      return values[node.name];
+
+    case "not":
+      return !evaluate(node.child, values);
+
+    case "and":
+      return evaluate(node.left, values) &&
+             evaluate(node.right, values);
+
+    case "or":
+      return evaluate(node.left, values) ||
+             evaluate(node.right, values);
+
+    default:
+      throw new Error("Tipe ekspresi tidak dikenal.");
+  }
+}
+
+function generateTruthTable() {
+  errorBox.classList.add("hidden");
+
+  try {
+    const expression = input.value.trim();
+    const tokens = tokenize(expression);
+    const { tree, variables } = parse(tokens);
+
+    if (variables.length > 12) {
+      throw new Error(
+        "Maksimal 12 variabel untuk mencegah tabel terlalu besar."
+      );
+    }
+
+    const rowCount = 2 ** variables.length;
+    const rows = [];
+
+    for (let i = 0; i < rowCount; i++) {
+      const values = {};
+
+      variables.forEach((name, index) => {
+        // Urutan kombinasi: T terlebih dahulu, kemudian F
+        values[name] = (i & (1 << (variables.length - index - 1))) === 0;
+      });
+
+      rows.push({
+        values,
+        result: evaluate(tree, values)
+      });
+    }
+
+    const headerCells = [
+      ...variables.map(name => `<th>${escapeHTML(name)}</th>`),
+      "<th>Hasil</th>"
+    ].join("");
+
+    const bodyRows = rows.map(row => {
+      const cells = variables.map(name =>
+        truthCell(row.values[name])
+      );
+
+      cells.push(truthCell(row.result));
+
+      return `<tr>${cells.join("")}</tr>`;
+    }).join("");
+
+    output.innerHTML = `
+      <h2>📊 Hasil Tabel Kebenaran</h2>
+      <p class="result-heading">${escapeHTML(expression)}</p>
+
+      <div class="stats">
+        <div class="stat">
+          <strong>${variables.length}</strong>
+          <span class="muted">Variabel</span>
+        </div>
+        <div class="stat">
+          <strong>${rowCount}</strong>
+          <span class="muted">Kombinasi T/F</span>
+        </div>
+        <div class="stat">
+          <strong>${rows.filter(r => r.result).length}</strong>
+          <span class="muted">Hasil benar</span>
+        </div>
+      </div>
+
+      <p class="note">
+        Variabel terdeteksi: ${variables.map(escapeHTML).join(", ") || "Tidak ada"}
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>${headerCells}</tr></thead>
+          <tbody>${bodyRows}</tbody>
+        </table>
+      </div>
+
+      <div class="controls">
+        <button id="downloadBtn">⬇ Unduh CSV</button>
+        <button id="printBtn">🖨 Cetak / Simpan PDF</button>
+      </div>
+    `;
+
+    document.getElementById("downloadBtn").onclick = () => {
+      downloadCSV(expression, variables, rows);
+    };
+
+    document.getElementById("printBtn").onclick = () => {
+      window.print();
+    };
+
+  } catch (error) {
+    errorBox.textContent = "Kesalahan: " + error.message;
+    errorBox.classList.remove("hidden");
+  }
+}
+
+function truthCell(value) {
+  return `<td class="${value ? "truth" : "falsehood"}">${value ? "T" : "F"}</td>`;
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+function downloadCSV(expression, variables, rows) {
+  const data = [
+    [`Ekspresi: ${expression}`],
+    [...variables, "Hasil"],
+    ...rows.map(row => [
+      ...variables.map(name => row.values[name] ? "T" : "F"),
+      row.result ? "T" : "F"
+    ])
+  ];
+
+  const csv = "\uFEFF" + data.map(row =>
+    row.map(value =>
+      `"${String(value).replace(/"/g, '""')}"`
+    ).join(",")
+  ).join("\r\n");
+
+  const blob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "tabel_kebenaran.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("generateBtn").addEventListener(
+  "click", generateTruthTable
+);
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  input.value = "";
+  errorBox.classList.add("hidden");
+  output.innerHTML = `
+    <h2>📊 Hasil Tabel Kebenaran</h2>
+    <p class="muted">Masukkan ekspresi untuk menghasilkan tabel.</p>
+  `;
+  input.focus();
+});
+
+document.querySelectorAll(".example-btn").forEach(button => {
+  button.addEventListener("click", () => {
+    input.value = button.dataset.expression;
+    generateTruthTable();
+  });
+});
+
+input.addEventListener("keydown", event => {
+  if (event.ctrlKey && event.key === "Enter") {
+    generateTruthTable();
+  }
+});
+
+// Tampilkan contoh saat aplikasi pertama kali dibuka
+generateTruthTable();
+</script>
+</body>
+</html>
